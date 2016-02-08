@@ -1,0 +1,47 @@
+type Mutation {
+  addWreck(name: String!, latitude: Float!, longitude: Float!, shortDescription: String!, description: String!, sinkDate: String!, imagePath: String): WreckType
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Root {
+  viewer: Viewer
+  node(id: ID!): Node
+}
+
+type Viewer implements Node {
+  id: ID!
+  wrecks(after: String, first: Int, before: String, last: Int): WreckTypeConnection
+  wreck(id: String): WreckType
+}
+
+type WreckType implements Node {
+  id: ID!
+  wreckId: String
+  name: String
+  shortDescription: String
+  description: String
+  latitude: Float
+  longitude: Float
+  sinkDate: String
+  imagePath: String
+}
+
+type WreckTypeConnection {
+  pageInfo: PageInfo!
+  edges: [WreckTypeEdge]
+}
+
+type WreckTypeEdge {
+  node: WreckType
+  cursor: String!
+}
