@@ -4,21 +4,9 @@ var mysql_schema = process.env.CLEARDB_DATABASE_SCHEMA || "greec"
 var mysql_user = process.env.CLEARDB_DATABASE_USER || "greec"
 var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "test"
 
-const connection = new Sequelize(
-    mysql_schema,
-    mysql_user,
-    mysql_pass,
-    {
-        dialect: "mysql",
-        host: process.env.CLEARDB_DATABASE_URL  || "localhost",
-        dialectOptions: {
-            reconnect: true
-        },
-        query: {
-            reconnect: true
-        }
-    }
-)
+
+const connection = process.env.CLEARDB_DATABASE_URL !== undefined ? new Sequelize(process.env.CLEARDB_DATABASE_URL)
+    :  new Sequelize(mysql_schema, mysql_user, mysql_pass, {dialect: "mysql", host: "localhost"})
 
 const Wreck = connection.define('wreck',  {
 
