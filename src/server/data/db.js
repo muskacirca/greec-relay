@@ -6,12 +6,12 @@ const connection = new Sequelize(
     'test',
     {
         dialect: "mysql",
-        host: "localhost"
+        host: process.env.CLEARDB_DATABASE_URL  || "localhost"
     }
 )
 
 const Wreck = connection.define('wreck',  {
-  
+
     name: {
         type: Sequelize.STRING,
         allowNull: false
@@ -47,7 +47,7 @@ const Wreck = connection.define('wreck',  {
 //Media.belongsTo(Wreck)
 
 
-connection.sync({force: false})
+connection.sync({force: true})
 
 
 export default connection
