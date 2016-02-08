@@ -10,7 +10,13 @@ const connection = new Sequelize(
     mysql_pass,
     {
         dialect: "mysql",
-        host: process.env.CLEARDB_DATABASE_URL  || "localhost"
+        host: process.env.CLEARDB_DATABASE_URL  || "localhost",
+        dialectOptions: {
+            reconnect: true
+        },
+        query: {
+            reconnect: true
+        }
     }
 )
 
@@ -44,14 +50,20 @@ const Wreck = connection.define('wreck',  {
         type: Sequelize.STRING,
         allowNull: false
     }
-})
+},
+
+    // Options
+    {
+        timestamps: false
+    }
+)
 
 // Relationship
 //Wreck.hasMany(Media)
 //Media.belongsTo(Wreck)
 
 
-connection.sync({force: true})
+connection.sync({force: false})
 
 
 export default connection

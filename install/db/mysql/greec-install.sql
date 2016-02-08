@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS User (
   UNIQUE KEY UK_Login (login)
 );
 
-CREATE TABLE IF NOT EXISTS Wreck (
+CREATE TABLE IF NOT EXISTS wrecks (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   name varchar(100) NOT NULL,
   shortDescription TINYTEXT NOT NULL,

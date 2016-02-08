@@ -16,7 +16,13 @@ var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "test";
 
 var connection = new _sequelize2.default(mysql_schema, mysql_user, mysql_pass, {
     dialect: "mysql",
-    host: process.env.CLEARDB_DATABASE_URL || "localhost"
+    host: process.env.CLEARDB_DATABASE_URL || "localhost",
+    dialectOptions: {
+        reconnect: true
+    },
+    query: {
+        reconnect: true
+    }
 });
 
 var Wreck = connection.define('wreck', {
@@ -49,12 +55,17 @@ var Wreck = connection.define('wreck', {
         type: _sequelize2.default.STRING,
         allowNull: false
     }
+},
+
+// Options
+{
+    timestamps: false
 });
 
 // Relationship
 //Wreck.hasMany(Media)
 //Media.belongsTo(Wreck)
 
-connection.sync({ force: true });
+connection.sync({ force: false });
 
 exports.default = connection;
