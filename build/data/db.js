@@ -10,10 +10,11 @@ var _sequelize2 = _interopRequireDefault(_sequelize);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var mysql_schema = process.env.CLEARDB_DATABASE_SCHEMA || "greec";
 var mysql_user = process.env.CLEARDB_DATABASE_USER || "greec";
 var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "test";
 
-var connection = new _sequelize2.default('greec', 'greec', 'test', {
+var connection = new _sequelize2.default(mysql_schema, mysql_user, mysql_pass, {
     dialect: "mysql",
     host: process.env.CLEARDB_DATABASE_URL || "localhost"
 });
