@@ -1,5 +1,8 @@
 import Sequelize from 'sequelize'
 
+var mysql_user = process.env.CLEARDB_DATABASE_USER || "greec"
+var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "test"
+
 const connection = new Sequelize(
     'greec',
     'greec',

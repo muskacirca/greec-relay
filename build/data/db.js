@@ -1,14 +1,17 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _sequelize = require('sequelize');
+var _sequelize = require("sequelize");
 
 var _sequelize2 = _interopRequireDefault(_sequelize);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mysql_user = process.env.CLEARDB_DATABASE_USER || "greec";
+var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "test";
 
 var connection = new _sequelize2.default('greec', 'greec', 'test', {
     dialect: "mysql",
