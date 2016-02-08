@@ -1,11 +1,11 @@
 'use strict';
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.Schema = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _graphql = require('graphql');
 
@@ -54,6 +54,7 @@ var _nodeDefinitions = (0, _graphqlRelay.nodeDefinitions)(function (globalId) {
 
 var nodeInterface = _nodeDefinitions.nodeInterface;
 var nodeField = _nodeDefinitions.nodeField;
+
 
 var GraphQLWreckType = new _graphql.GraphQLObjectType({
     name: 'WreckType',
@@ -120,6 +121,7 @@ var _connectionDefinition =
 
 var WrecksConnection = _connectionDefinition.connectionType;
 
+
 var GraphQLViewer = new _graphql.GraphQLObjectType({
     name: 'Viewer',
     fields: function fields() {
@@ -167,7 +169,7 @@ var GraphQLViewer = new _graphql.GraphQLObjectType({
 
                     var wreck = (0, _WreckStore.getById)(id);
                     if (wreck !== undefined) {
-                        console.log("data retrieved from cache : " + JSON.stringify(wreck));
+                        console.log("data retrieved from cache.");
                         return wreck;
                     }
 

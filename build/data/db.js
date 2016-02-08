@@ -12,7 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var connection = new _sequelize2.default('greec', 'greec', 'test', {
     dialect: "mysql",
-    host: "localhost"
+    host: process.env.CLEARDB_DATABASE_URL || "localhost"
 });
 
 var Wreck = connection.define('wreck', {
@@ -51,6 +51,6 @@ var Wreck = connection.define('wreck', {
 //Wreck.hasMany(Media)
 //Media.belongsTo(Wreck)
 
-connection.sync({ force: false });
+connection.sync({ force: true });
 
 exports.default = connection;
