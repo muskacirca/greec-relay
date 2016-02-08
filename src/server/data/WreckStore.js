@@ -60,7 +60,11 @@ export function getWrecks() {
 
 export function pushWreck(wreck) {
 
-    const typedWreck = new Wreck();
-    Object.assign(typedWreck, wreck);
-    wrecksStore.push(typedWreck)
+    var wreck = wrecksStore.filter((elt) => {
+        if(elt.id == wreck.id) {
+            return elt
+        }
+    })
+
+    if(!wreck[0]) wrecksStore.push(wreck)
 }

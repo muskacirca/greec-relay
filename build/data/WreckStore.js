@@ -104,7 +104,11 @@ function getWrecks() {
 
 function pushWreck(wreck) {
 
-    var typedWreck = new Wreck();
-    Object.assign(typedWreck, wreck);
-    wrecksStore.push(typedWreck);
+    var wreck = wrecksStore.filter(function (elt) {
+        if (elt.id == wreck.id) {
+            return elt;
+        }
+    });
+
+    if (!wreck[0]) wrecksStore.push(wreck);
 }
