@@ -19,7 +19,7 @@ const Wreck = connection.define('wreck',  {
         allowNull: false
     },
     longitude: {
-        type: Sequelize.STRING,
+        type: Sequelize.DOUBLE,
         allowNull: false
     },
     shortDescription: {

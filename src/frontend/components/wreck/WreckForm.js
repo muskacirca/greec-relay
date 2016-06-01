@@ -1,15 +1,12 @@
 import React from 'react'
 import Relay from 'react-relay'
 
-import axios from 'axios'
-import moment from 'moment'
+import AddOrUpdateWreckMutation from '../../mutations/AddOrUpdateWreckMutation'
+
 import _ from 'lodash'
 
 import ReactMarkdown from 'react-markdown'
 
-//import MapAction from '../../actions/MapAction'
-//import AdminAction from '../../actions/AdminAction'
-//import AdminStore from '../../stores/AdminStore'
 
 class WreckForm extends React.Component {
 
@@ -47,16 +44,39 @@ class WreckForm extends React.Component {
         });
     }
 
+    updateAlert(message, type) {
+        let alert = {message: message, type: type}
+        this.setState({alert: alert})
+    }
+
     submitForm(e) {
-        e.preventDefault()
-        var wreck = {
+        
+        console.log("hello");
+
+        e.preventDefault();
+
+        var addOrUpdateWreckMutation = new AddOrUpdateWreckMutation({
+            wreck: this.props.viewer.wreck,
+            id: this.props.viewer.wreck.id,
             name: this.refs.name.value,
             shortDescription: this.refs.shortDescription.value,
             description: this.refs.description.value,
             sinkDate: this.refs.sinkDate.value,
             latitude: this.refs.latitude.value,
             longitude: this.refs.longitude.value
+        });
+
+        var onSuccess = (response) => {
+            console.log("response : " + JSON.stringify(response));
+            this.updateAlert("Wreck added successfully", "success");
         }
+
+        var onFailure = (transaction) => {
+            console.log("transaction : " + transaction);
+            this.updateAlert("An error occurred when adding new wreck", "error");
+        }
+
+        Relay.Store.commitUpdate(addOrUpdateWreckMutation, {onSuccess, onFailure});
 
         //MapAction.toggleEditionMode()
 
@@ -262,7 +282,7 @@ class WreckForm extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <div className="col-md-offset-2 col-md-10">
-                                        <button type="submit" className="btn btn-primary">Submit</button>
+                                        <button type="submit" onCLick={this.submitForm.bind(this)}className="btn btn-primary">Submit</button>
                                     </div>
                                 </div>
                             </form>
@@ -298,7 +318,9 @@ export default Relay.createContainer(WreckForm, {
         viewer: () => Relay.QL`
           fragment on Viewer {
             wreck(id: $id) {
+              ${AddOrUpdateWreckMutation.getFragment('wreck')}
               wreckId,
+              id,
               name,
               shortDescription,
               description,

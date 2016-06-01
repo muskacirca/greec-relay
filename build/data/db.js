@@ -27,7 +27,7 @@ var Wreck = connection.define('wreck', {
         allowNull: false
     },
     longitude: {
-        type: _sequelize2.default.STRING,
+        type: _sequelize2.default.DOUBLE,
         allowNull: false
     },
     shortDescription: {

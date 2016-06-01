@@ -1,5 +1,22 @@
+input AddOrUpdateWreckInput {
+  id: String
+  name: String!
+  latitude: Float!
+  longitude: Float!
+  shortDescription: String!
+  description: String!
+  sinkDate: String!
+  imagePath: String
+  clientMutationId: String!
+}
+
+type AddOrUpdateWreckPayload {
+  wreck: WreckType
+  clientMutationId: String!
+}
+
 type Mutation {
-  addWreck(name: String!, latitude: Float!, longitude: Float!, shortDescription: String!, description: String!, sinkDate: String!, imagePath: String): WreckType
+  addOrUpdateWreck(input: AddOrUpdateWreckInput!): AddOrUpdateWreckPayload
 }
 
 interface Node {
