@@ -18,6 +18,7 @@ class Alert extends React.Component {
     
     componentWillReceiveProps(newprops) {
         if(!_.isEqual(newprops, this.props)) {
+            console.log("updating alert");
             this.setState({alert: newprops.alert})
         }
     }

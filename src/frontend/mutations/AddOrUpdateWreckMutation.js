@@ -45,7 +45,7 @@ class AddOrUpdateWreckMutation extends Relay.Mutation {
             latitude: this.props.latitude,
             longitude: this.props.longitude,
             shortDescription: this.props.shortDescription,
-            description: this.props.latitude,
+            description: this.props.description,
             sinkDate: this.props.sinkDate,
             imagePath: this.props.imagePath
         };

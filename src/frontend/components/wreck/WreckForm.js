@@ -57,9 +57,9 @@ class WreckForm extends React.Component {
         e.preventDefault();
 
         let file = this.refs.fileInput.files.item(0);
-        console.log("file : " + JSON.stringify(file.name));
-        const filename = sanitize(file.name.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''));
-        let imagePath = file ? "/images/" + filename : this.state.wreck.imagePath;
+        let imagePath = file
+            ? "/images/" + sanitize(file.name.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''))
+            : this.state.wreck.imagePath;
 
         const addOrUpdateWreckMutation = new AddOrUpdateWreckMutation({
             wreck: this.props.viewer.wreck,
@@ -94,7 +94,7 @@ class WreckForm extends React.Component {
             //AdminAction.createWreck({wreck: wreck, file: this.state.file})
         }
     }
-    
+
     drawThumbnail(filePath) {
 
         var image = new Image();
@@ -127,7 +127,7 @@ class WreckForm extends React.Component {
             image.height = imageHeight;
             var ctx = canvas.getContext("2d");
             ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
-            
+
             document.getElementById('imagePreview').src = canvas.toDataURL();
         }
     }
@@ -226,42 +226,39 @@ class WreckForm extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="gpsCoordinates" className="col-md-2 control-label">Coordonées GPS</label>
-                                    <div className="form-inline">
-                                        <div className="form-group col-md-3">
-                                            <label htmlFor="selectCoordinate" className="control-label">{' '}</label>
+
+                                    <div className="col-md-10">
+                                        <div className="form-inline">
+                                            <div className="form-group">
+
+                                                <label htmlFor="wreckLatitude" >Lat</label>
+                                                <input id="wreckLatitude" ref="latitude" name="latitude"
+                                                       type="text" className="form-control"
+                                                       value={latitude}
+                                                       onChange={this.validateCoordinates.bind(this)} />
+                                            </div>
+                                            <div className="form-group">
+                                                <label htmlFor="wreckLongitude">Lng</label>
+                                                <input id="wreckLongitude" ref="longitude" name="longitude"
+                                                       type="text" className="form-control"
+                                                       value={longitude}
+                                                       onChange={this.validateCoordinates.bind(this)} />
+                                            </div>
                                             <button id="selectCoordinate" ref="selectCoordinate" name="selectCoordinate"
                                                     className="btn btn-default" onClick={this.selectCoordinate.bind(this)}>
                                                 Select coordinate
                                             </button>
                                         </div>
-                                        <div className="form-group col-md-4">
-                                            <label htmlFor="wreckLatitude" className="control-label">Latitude</label>{' '}
-                                            <input id="wreckLatitude" ref="latitude" name="latitude"
-                                                   type="text" className="form-control"
-                                                   value={latitude}
-                                                   onChange={this.validateCoordinates.bind(this)} />
-                                        </div>
-                                        <div className="form-group col-md-4">
-                                            <label htmlFor="wreckLongitude" className="control-label">Longitude</label>{' '}
-                                            <input id="wreckLongitude" ref="longitude" name="longitude"
-                                                   type="text" className="form-control"
-                                                   value={longitude}
-                                                   onChange={this.validateCoordinates.bind(this)} />
-                                        </div>
-                                    </div>
-
-                                    <div className="col-md-6">
-
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="imageInputFile" className="col-md-2 control-label">Image</label>
-                                    <div className="col-md-3">
+                                    <div className="col-md-5">
                                         <input ref="fileInput" type="file" name="uploadedFile" id="imageInputFile"
                                                onChange={this.handleFile.bind(this)} />
                                         <p className="help-block">Taille maximum: 160Ko</p>
                                     </div>
-                                    <div className="col-md-6">
+                                    <div className="col-md-4">
                                         <img id="imagePreview" />
                                     </div>
                                 </div>
@@ -284,6 +281,14 @@ class WreckForm extends React.Component {
 
     }
 }
+
+// <div className="col-md-3">
+//     <label htmlFor="selectCoordinate" className="control-label">{' '}</label>
+//     <button id="selectCoordinate" ref="selectCoordinate" name="selectCoordinate"
+//             className="btn btn-default" onClick={this.selectCoordinate.bind(this)}>
+//         Select coordinate
+//     </button>
+// </div>
 
 export default Relay.createContainer(WreckForm, {
 

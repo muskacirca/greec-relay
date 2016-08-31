@@ -1,5 +1,6 @@
 import React from 'react'
 import Relay from 'react-relay'
+import ReactMarkdown from 'react-markdown'
 
 class PresentationComponent extends React.Component {
 
@@ -41,7 +42,7 @@ class PresentationComponent extends React.Component {
                           </div>
                           <div className="presentation-body">
                               <p className="lead">{wreck.shortDescription}</p>
-                              <p>{wreck.description}</p>
+                              <ReactMarkdown source={wreck.description} />
                           </div>
 
                       </div>
