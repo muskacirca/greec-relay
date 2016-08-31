@@ -56082,7 +56082,7 @@
 	        var _this = _possibleConstructorReturn(this, (WreckForm.__proto__ || Object.getPrototypeOf(WreckForm)).call(this, props));
 
 	        _this.state = {
-	            wreck: {},
+	            wreck: { description: '' },
 	            file: {},
 	            fileUri: "",
 	            editionMode: false,
@@ -56470,7 +56470,7 @@
 	                                    { className: 'col-md-offset-2 col-md-10' },
 	                                    _react2.default.createElement(
 	                                        'button',
-	                                        { type: 'submit', onCLick: this.submitForm.bind(this), className: 'btn btn-primary' },
+	                                        { type: 'submit', onClick: this.submitForm.bind(this), className: 'btn btn-primary' },
 	                                        'Submit'
 	                                    )
 	                                )

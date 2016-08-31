@@ -13,7 +13,7 @@ class WreckForm extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            wreck: {},
+            wreck: {description: ''},
             file: {},
             fileUri: "",
             editionMode: false,
@@ -22,7 +22,6 @@ class WreckForm extends React.Component {
     }
 
     onChangeInAdmin(state) {
-        console.log("on change in wreckForm : " + JSON.stringify(state))
         this.setState({wreck: state.wreck})
     }
 
@@ -290,7 +289,7 @@ class WreckForm extends React.Component {
                                 </div>
                                 <div className="form-group">
                                     <div className="col-md-offset-2 col-md-10">
-                                        <button type="submit" onCLick={this.submitForm.bind(this)}className="btn btn-primary">Submit</button>
+                                        <button type="submit" onClick={this.submitForm.bind(this)}className="btn btn-primary">Submit</button>
                                     </div>
                                 </div>
                             </form>
