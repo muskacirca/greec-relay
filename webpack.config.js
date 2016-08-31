@@ -14,7 +14,7 @@ var frontendConfig = assign({}, defaultConfig, {
 
   output: {
     filename: 'bundle.js',
-    path: path.join(__dirname, 'src', 'frontend')
+    path: path.join(__dirname, 'src', 'frontend', 'public')
   },
 
   module: {

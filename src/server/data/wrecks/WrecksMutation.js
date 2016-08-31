@@ -32,14 +32,14 @@ export const AddOrUpdateWreckMutation = new mutationWithClientMutationId({
     outputFields: {
         wreck: {
             type: GraphQLWreckType,
-            resolve: (id) => Database.models.wreck.findById(id).then(r => r)
+            resolve: (wreck) => wreck
         }
     },
     mutateAndGetPayload: (wreck) => {
 
         console.log("yoooo : " + JSON.stringify(wreck));
 
-        if(wreck.imagePath) {
+        if(wreck.file) {
             let imageName = wreck.file.substring(0, wreck.file.lastIndexOf('.'));
             let mimeType = wreck.file.substring(wreck.file.lastIndexOf('.'));
             console.log("imageName : " + JSON.stringify(imageName));
@@ -50,10 +50,10 @@ export const AddOrUpdateWreckMutation = new mutationWithClientMutationId({
             console.log("creating : " + JSON.stringify(wreck));
             return Database.models.wreck.create(wreck).then(r => r)
         } else {
-            wreck.id = fromGlobalId(wreck.id).id;
-            wreck.imagePath = wreck.file;
+            let id = fromGlobalId(wreck.id).id;
+            wreck.id = id;
             console.log("updating : " + JSON.stringify(wreck));
-            return Database.models.wreck.update(wreck, {where: {id: wreck.id}}).then(r =>  r)
+            return Database.models.wreck.update(wreck, {where: {id: wreck.id}}).then(r =>  wreck)
         }
     }
 });

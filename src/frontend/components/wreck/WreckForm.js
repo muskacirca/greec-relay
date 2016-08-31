@@ -2,6 +2,9 @@ import React from 'react'
 import Relay from 'react-relay'
 
 import AddOrUpdateWreckMutation from '../../mutations/AddOrUpdateWreckMutation'
+import Alert from '../utils/Alert'
+
+import sanitize from 'sanitize-filename';
 
 import _ from 'lodash'
 
@@ -17,7 +20,7 @@ class WreckForm extends React.Component {
             file: {},
             fileUri: "",
             editionMode: false,
-            status: ""
+            showForm: true
         }
     }
 
@@ -25,15 +28,12 @@ class WreckForm extends React.Component {
         this.setState({wreck: state.wreck})
     }
 
-    componentDidMount() {
-
+    componentWillReceiveProps(nextprops) {
+        this.setState({wreck: nextprops.viewer.wreck})
     }
 
-    componentWillMount() {
-        //console.log("WreckForm componentWillMount(). params.id : " + this.props.params.id + ", state wreck: " + JSON.stringify(this.state.wreck))
-        //console.log("yooo: " + JSON.stringify(this.props))
-        //if(this.props.params.id) this.setState({editionMode: true})
-        //this.setState({wreck: this.props.location.state.wreck})
+    componentDidMount() {
+        this.setState({wreck: this.props.viewer.wreck})
     }
 
     displayDate() {
@@ -44,19 +44,22 @@ class WreckForm extends React.Component {
     }
 
     updateAlert(message, type) {
-        let alert = {message: message, type: type}
+        let alert = {message: message, type: type};
         this.setState({alert: alert})
+    }
+
+    computeAlerts() {
+            return <Alert alert={this.state.alert}/>
     }
 
     submitForm(e) {
 
-        console.log("hello");
-
         e.preventDefault();
 
         let file = this.refs.fileInput.files.item(0);
-        
-        let imagePath = file ? "/images/" + file.substring(0, file.lastIndexOf('.')) : this.state.wreck.imagePath;
+        console.log("file : " + JSON.stringify(file.name));
+        const filename = sanitize(file.name.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''));
+        let imagePath = file ? "/images/" + filename : this.state.wreck.imagePath;
 
         const addOrUpdateWreckMutation = new AddOrUpdateWreckMutation({
             wreck: this.props.viewer.wreck,
@@ -72,15 +75,13 @@ class WreckForm extends React.Component {
         });
 
         let onSuccess = (response) => {
-            console.log("response : " + JSON.stringify(response));
             this.updateAlert("Wreck added successfully", "success");
         };
 
         let onFailure = (transaction) => {
             let error = transaction.getError() || new Error('Mutation failed.');
-            console.log("wreckform mutation error ...: " );
             this.updateAlert(error, "error");
-        }
+        };
 
         Relay.Store.commitUpdate(addOrUpdateWreckMutation, {onSuccess, onFailure});
 
@@ -93,57 +94,55 @@ class WreckForm extends React.Component {
             //AdminAction.createWreck({wreck: wreck, file: this.state.file})
         }
     }
+    
+    drawThumbnail(filePath) {
+
+        var image = new Image();
+        image.src = filePath;
+
+        image.onload = function() {
+            var maxWidth = 300,
+                maxHeight = 300,
+                imageWidth = image.width,
+                imageHeight = image.height;
+
+
+            if (imageWidth > imageHeight) {
+                if (imageWidth > maxWidth) {
+                    imageHeight *= maxWidth / imageWidth;
+                    imageWidth = maxWidth;
+                }
+            }
+            else {
+                if (imageHeight > maxHeight) {
+                    imageWidth *= maxHeight / imageHeight;
+                    imageHeight = maxHeight;
+                }
+            }
+
+            var canvas = document.createElement('canvas');
+            canvas.width = imageWidth;
+            canvas.height = imageHeight;
+            image.width = imageWidth;
+            image.height = imageHeight;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
+            
+            document.getElementById('imagePreview').src = canvas.toDataURL();
+        }
+    }
 
     handleFile(e) {
 
         var file = this.refs.fileInput.files.item(0);
-        // var file = e.target.value.split(/(\\|\/)/g).pop()
-        var file2 = e.target.files[0]
-
         var reader = new FileReader();
 
         reader.onload = function(event) {
-
-            var image = new Image();
-            image.src = event.target.result;
-
-            image.onload = function() {
-                var maxWidth = 300,
-                    maxHeight = 300,
-                    imageWidth = image.width,
-                    imageHeight = image.height;
-
-
-                if (imageWidth > imageHeight) {
-                    if (imageWidth > maxWidth) {
-                        imageHeight *= maxWidth / imageWidth;
-                        imageWidth = maxWidth;
-                    }
-                }
-                else {
-                    if (imageHeight > maxHeight) {
-                        imageWidth *= maxHeight / imageHeight;
-                        imageHeight = maxHeight;
-                    }
-                }
-
-                var canvas = document.createElement('canvas');
-                canvas.width = imageWidth;
-                canvas.height = imageHeight;
-                image.width = imageWidth;
-                image.height = imageHeight;
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
-
-                document.getElementById('imagePreview').src = canvas.toDataURL(file.type);
-
-            }
-
-        }
+            this.drawThumbnail(event.target.result, file);
+        }.bind(this);
 
         this.setState({file: file});
         reader.readAsDataURL(file)
-
     }
 
     validateCoordinates(e) {
@@ -164,45 +163,21 @@ class WreckForm extends React.Component {
         return this.state.editionMode ? "Mise à jour de l'épave" : "Ajout d'une nouvelle épave"
     }
 
-    computeAlerts() {
-
-        if(this.state.status != "") {
-            return <div class="panel panel-default">
-                        <div class="panel-body">
-                            Panel content
-                        </div>
-                        <div class="panel-footer">Panel footer</div>
-                    </div>
-        }
-    }
-
-    componentWillReceiveProps(nextprops) {
-
-        console.log("componentWillReceiveProps WreckForm : " + nextprops)
-        this.setState({wreck: nextprops.viewer.wreck})
-
-    }
-
-    componentDidMount() {
-
-        console.log("componentWillMount WreckForm :" + this.props.viewer)
-        this.setState({wreck: this.props.viewer.wreck})
-    }
-
     render() {
 
-        var wreck = this.state.wreck
+        let wreck = this.state.wreck;
 
-        var latitude = this.state.wreck.latitude
-        var longitude = this.state.wreck.longitude
+        let latitude = this.state.wreck.latitude;
+        let longitude = this.state.wreck.longitude;
         if(this.props.selectedCoordinates) {
             console.log("not edition mode")
-            latitude = this.props.selectedCoordinates.lat
+            latitude = this.props.selectedCoordinates.lat;
             longitude = this.props.selectedCoordinates.lng
         }
 
-        var pageTitle = this.computePageTitle()
-        var alerts = this.computeAlerts()
+        let pageTitle = this.computePageTitle();
+        let alerts = this.computeAlerts();
+        this.drawThumbnail(this.state.wreck.imagePath);
 
         return  <div className="col-md-10 col-md-offset-1">
                     {alerts}
@@ -250,17 +225,6 @@ class WreckForm extends React.Component {
                                     </div>
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="imageInputFile" className="col-md-2 control-label">Image</label>
-                                    <div className="col-md-3">
-                                        <input ref="fileInput" type="file" name="uploadedFile" id="imageInputFile"
-                                               onChange={this.handleFile.bind(this)} />
-                                        <p className="help-block">Taille maximum: 160Ko</p>
-                                    </div>
-                                    <div className="col-md-6">
-
-                                    </div>
-                                </div>
-                                <div className="form-group">
                                     <label htmlFor="gpsCoordinates" className="col-md-2 control-label">Coordonées GPS</label>
                                     <div className="form-inline">
                                         <div className="form-group col-md-3">
@@ -291,8 +255,21 @@ class WreckForm extends React.Component {
                                     </div>
                                 </div>
                                 <div className="form-group">
+                                    <label htmlFor="imageInputFile" className="col-md-2 control-label">Image</label>
+                                    <div className="col-md-3">
+                                        <input ref="fileInput" type="file" name="uploadedFile" id="imageInputFile"
+                                               onChange={this.handleFile.bind(this)} />
+                                        <p className="help-block">Taille maximum: 160Ko</p>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <img id="imagePreview" />
+                                    </div>
+                                </div>
+                                <div className="form-group">
                                     <div className="col-md-offset-2 col-md-10">
-                                        <button type="submit" onClick={this.submitForm.bind(this)}className="btn btn-primary">Submit</button>
+                                        <button type="submit" onClick={this.submitForm.bind(this)} className="btn btn-primary">
+                                            Submit
+                                        </button>
                                     </div>
                                 </div>
                             </form>
@@ -301,9 +278,6 @@ class WreckForm extends React.Component {
                             <ReactMarkdown source={this.state.wreck.description} />
                         </div>
 
-                    </div>
-                    <div>
-                        <img id="imagePreview" src={wreck.imagePath}/>
                     </div>
             </div>
 

@@ -1,4 +1,3 @@
-#!/bin/env node
 import express from 'express'
 import path from 'path'
 
@@ -25,7 +24,7 @@ app.use('/public', express.static(path.resolve(__dirname, '../src/public')));
 app.use('/images', express.static(path.resolve(__dirname, '../images')));
 
 app.get('/bundle.js', (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../lib/bundle.js"));
+    res.sendFile(path.resolve(__dirname, "../src/frontend/public/bundle.js"));
 });
 
 const storage = multer.memoryStorage();
@@ -59,7 +58,6 @@ const uploadMiddleWare = (req, res, next) => {
         req.body.variables = JSON.parse(req.body.variables);
 
         files.forEach(fileArray => {
-            console.log("there's a file");
             const file = fileArray[0];
             const filename = sanitize(file.originalname.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''));
 

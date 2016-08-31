@@ -34,10 +34,8 @@ var AddOrUpdateWreckMutation = exports.AddOrUpdateWreckMutation = new _graphqlRe
     outputFields: {
         wreck: {
             type: _WreckModel.GraphQLWreckType,
-            resolve: function resolve(id) {
-                return _db2.default.models.wreck.findById(id).then(function (r) {
-                    return r;
-                });
+            resolve: function resolve(wreck) {
+                return wreck;
             }
         }
     },
@@ -45,7 +43,7 @@ var AddOrUpdateWreckMutation = exports.AddOrUpdateWreckMutation = new _graphqlRe
 
         console.log("yoooo : " + JSON.stringify(wreck));
 
-        if (wreck.imagePath) {
+        if (wreck.file) {
             var imageName = wreck.file.substring(0, wreck.file.lastIndexOf('.'));
             var mimeType = wreck.file.substring(wreck.file.lastIndexOf('.'));
             console.log("imageName : " + JSON.stringify(imageName));
@@ -58,11 +56,11 @@ var AddOrUpdateWreckMutation = exports.AddOrUpdateWreckMutation = new _graphqlRe
                 return r;
             });
         } else {
-            wreck.id = (0, _graphqlRelay.fromGlobalId)(wreck.id).id;
-            wreck.imagePath = wreck.file;
+            var id = (0, _graphqlRelay.fromGlobalId)(wreck.id).id;
+            wreck.id = id;
             console.log("updating : " + JSON.stringify(wreck));
             return _db2.default.models.wreck.update(wreck, { where: { id: wreck.id } }).then(function (r) {
-                return r;
+                return wreck;
             });
         }
     }
