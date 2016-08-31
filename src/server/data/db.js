@@ -2,7 +2,7 @@ import Sequelize from 'sequelize'
 
 var mysql_schema = process.env.CLEARDB_DATABASE_SCHEMA || "greec";
 var mysql_user = process.env.CLEARDB_DATABASE_USER || "greec";
-var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "greec";
+var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "test";
 
 
 const connection = process.env.CLEARDB_DATABASE_URL !== undefined ? new Sequelize(process.env.CLEARDB_DATABASE_URL)

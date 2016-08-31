@@ -34,18 +34,16 @@ var { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
         let { id, type } = fromGlobalId(globalId);
         if (type === 'WreckType') {
-            console.log("Im here");
-            return getById(id)
+            return Database.models.wreck.findById(id)
         } else if (type === "Viewer") {
-            console.log("Im here getting vieweer");
             return getViewer(id);
         }
         return null;
     },
     (obj) => {
-        if (obj instanceof Wreck) {
+        if (obj.latitude) {
             return GraphQLWreckType;
-        } else if (obj instanceof Viewer) {
+        } else {
             return GraphQLViewer
         }
     }
@@ -106,23 +104,7 @@ export var GraphQLViewer = new GraphQLObjectType({
         wrecks: {
             type: WrecksConnection,
             args: {...connectionArgs},
-            resolve: (obj, {...args}) => {
-                //
-                // console.log("retrieving data ...");
-                // console.log("is initialized : " + isInitialized());
-
-                // if (isInitialized()) {
-                //     console.log("data retrieved from cache : " + getWrecks().length);
-                //     return connectionFromArray(getWrecks(), args)
-                // }
-
-                return Database.models.wreck.findAll()
-                    .then((response) => {
-                        console.log("data retrieved from remote : " + JSON.stringify(response.length));
-                        initState(response);
-                        return connectionFromArray(response, args)
-                    });
-            }
+            resolve: (obj, {...args}) =>  Database.models.wreck.findAll().then((response) => connectionFromArray(response, args))
         },
         wreck: {
             type: GraphQLWreckType,
@@ -131,22 +113,7 @@ export var GraphQLViewer = new GraphQLObjectType({
                     type: GraphQLString
                 }
             },
-            resolve: (obj, {id}) => {
-                console.log("retrieving data by id : " + id);
-
-                let wreck = getById(id);
-                if (wreck !== undefined) {
-                    console.log("data retrieved from cache.");
-                    return wreck
-                }
-
-                return Database.models.wreck.findById(id)
-                    .then((response) => {
-                        console.log("data retrieved from remote : " + JSON.stringify(response));
-                        pushWreck(response);
-                        return response
-                    });
-            }
+            resolve: (obj, {id}) => Database.models.wreck.findById(id).then(response => response)
         }
     }),
     interfaces: [nodeInterface]

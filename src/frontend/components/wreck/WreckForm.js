@@ -54,26 +54,29 @@ class WreckForm extends React.Component {
 
         e.preventDefault();
 
-        console.log("this.refs.fileInput.files.item(0) : " + JSON.stringify(this.refs.fileInput.files.item(0)));
+        let file = this.refs.fileInput.files.item(0);
+        
+        let imagePath = file ? "/images/" + file.substring(0, file.lastIndexOf('.')) : this.state.wreck.imagePath;
 
-        var addOrUpdateWreckMutation = new AddOrUpdateWreckMutation({
+        const addOrUpdateWreckMutation = new AddOrUpdateWreckMutation({
             wreck: this.props.viewer.wreck,
             id: this.props.viewer.wreck.id,
             name: this.refs.name.value,
-            file: this.refs.fileInput.files.item(0),
+            file: file,
             shortDescription: this.refs.shortDescription.value,
             description: this.refs.description.value,
             sinkDate: this.refs.sinkDate.value,
             latitude: this.refs.latitude.value,
-            longitude: this.refs.longitude.value
+            longitude: this.refs.longitude.value,
+            imagePath: imagePath
         });
 
-        var onSuccess = (response) => {
+        let onSuccess = (response) => {
             console.log("response : " + JSON.stringify(response));
             this.updateAlert("Wreck added successfully", "success");
-        }
+        };
 
-        var onFailure = (transaction) => {
+        let onFailure = (transaction) => {
             let error = transaction.getError() || new Error('Mutation failed.');
             console.log("wreckform mutation error ...: " );
             this.updateAlert(error, "error");

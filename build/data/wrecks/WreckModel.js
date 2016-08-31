@@ -25,6 +25,7 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
  * The first argument defines the way to resolve an ID to its object.
  * The second argument defines the way to resolve a node object to its GraphQL type.
  */
+
 var _nodeDefinitions = (0, _graphqlRelay.nodeDefinitions)(function (globalId) {
     var _fromGlobalId = (0, _graphqlRelay.fromGlobalId)(globalId);
 
@@ -32,17 +33,15 @@ var _nodeDefinitions = (0, _graphqlRelay.nodeDefinitions)(function (globalId) {
     var type = _fromGlobalId.type;
 
     if (type === 'WreckType') {
-        console.log("Im here");
-        return (0, _WreckStore.getById)(id);
+        return _db2.default.models.wreck.findById(id);
     } else if (type === "Viewer") {
-        console.log("Im here getting vieweer");
         return (0, _WreckStore.getViewer)(id);
     }
     return null;
 }, function (obj) {
-    if (obj instanceof _WreckStore.Wreck) {
+    if (obj.latitude) {
         return GraphQLWreckType;
-    } else if (obj instanceof _WreckStore.Viewer) {
+    } else {
         return GraphQLViewer;
     }
 });
@@ -105,7 +104,9 @@ var GraphQLWreckType = exports.GraphQLWreckType = new _graphql.GraphQLObjectType
     interfaces: [nodeInterface]
 });
 
-var _connectionDefinition = (0, _graphqlRelay.connectionDefinitions)({
+var _connectionDefinition =
+// ,edgeType: GraphQLSimTypesEdge,
+(0, _graphqlRelay.connectionDefinitions)({
     name: 'WreckType',
     nodeType: GraphQLWreckType
 });
@@ -123,18 +124,7 @@ var GraphQLViewer = exports.GraphQLViewer = new _graphql.GraphQLObjectType({
                 resolve: function resolve(obj, _ref) {
                     var args = _objectWithoutProperties(_ref, []);
 
-                    //
-                    // console.log("retrieving data ...");
-                    // console.log("is initialized : " + isInitialized());
-
-                    // if (isInitialized()) {
-                    //     console.log("data retrieved from cache : " + getWrecks().length);
-                    //     return connectionFromArray(getWrecks(), args)
-                    // }
-
                     return _db2.default.models.wreck.findAll().then(function (response) {
-                        console.log("data retrieved from remote : " + JSON.stringify(response.length));
-                        (0, _WreckStore.initState)(response);
                         return (0, _graphqlRelay.connectionFromArray)(response, args);
                     });
                 }
@@ -148,18 +138,7 @@ var GraphQLViewer = exports.GraphQLViewer = new _graphql.GraphQLObjectType({
                 },
                 resolve: function resolve(obj, _ref2) {
                     var id = _ref2.id;
-
-                    console.log("retrieving data by id : " + id);
-
-                    var wreck = (0, _WreckStore.getById)(id);
-                    if (wreck !== undefined) {
-                        console.log("data retrieved from cache.");
-                        return wreck;
-                    }
-
                     return _db2.default.models.wreck.findById(id).then(function (response) {
-                        console.log("data retrieved from remote : " + JSON.stringify(response));
-                        (0, _WreckStore.pushWreck)(response);
                         return response;
                     });
                 }

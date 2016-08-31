@@ -31,7 +31,7 @@ var Wreck = exports.Wreck = function (_Object) {
     function Wreck() {
         _classCallCheck(this, Wreck);
 
-        return _possibleConstructorReturn(this, (Wreck.__proto__ || Object.getPrototypeOf(Wreck)).apply(this, arguments));
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(Wreck).apply(this, arguments));
     }
 
     return Wreck;
@@ -43,7 +43,7 @@ var Viewer = exports.Viewer = function (_Object2) {
     function Viewer() {
         _classCallCheck(this, Viewer);
 
-        return _possibleConstructorReturn(this, (Viewer.__proto__ || Object.getPrototypeOf(Viewer)).apply(this, arguments));
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(Viewer).apply(this, arguments));
     }
 
     return Viewer;
