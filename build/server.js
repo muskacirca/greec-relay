@@ -35,9 +35,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var server_port = process.env.PORT || 3000;
 
-var graphql_ip = process.env.NODE_ENV === 'production' ? 'https://nodejsserverwithreact.herokuapp.com' : 'localhost';
-var graphql_port = '5000';
-
 var app = (0, _express2.default)();
 
 app.get('/', function (req, res) {
@@ -47,13 +44,14 @@ app.get('/', function (req, res) {
 app.use('/style', _express2.default.static(_path2.default.resolve(__dirname, '../src/style')));
 app.use('/utils', _express2.default.static(_path2.default.resolve(__dirname, '../src/utils')));
 app.use('/public', _express2.default.static(_path2.default.resolve(__dirname, '../src/public')));
+app.use('/images', _express2.default.static(_path2.default.resolve(__dirname, '../images')));
 
 app.get('/bundle.js', function (req, res) {
     res.sendFile(_path2.default.resolve(__dirname, "../lib/bundle.js"));
 });
 
 var storage = _multer2.default.memoryStorage();
-var multerMiddleware = (0, _multer2.default)({ storage: storage }).fields([{ name: 'image' }]);
+var multerMiddleware = (0, _multer2.default)({ storage: storage }).fields([{ name: 'file' }]);
 var uploadMiddleWare = function uploadMiddleWare(req, res, next) {
     multerMiddleware(req, res, function () {
         // request contains file data in req.files in format
@@ -85,7 +83,7 @@ var uploadMiddleWare = function uploadMiddleWare(req, res, next) {
         files.forEach(function (fileArray) {
             console.log("there's a file");
             var file = fileArray[0];
-            var filename = Date.now() + '_' + (0, _sanitizeFilename2.default)(file.originalname.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''));
+            var filename = (0, _sanitizeFilename2.default)(file.originalname.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''));
 
             // save file to disk
             var filePath = _path2.default.join(__dirname, '../images', filename);
@@ -104,17 +102,10 @@ app.use('/graphql', uploadMiddleWare);
 app.use('/graphql', (0, _expressGraphql2.default)(function (req) {
     return {
         schema: _schema.Schema,
-        rootValue: { request: req },
         pretty: true,
         graphiql: true
     };
 }));
-
-//app.use("/graphql", proxy(graphql_ip + ':' + graphql_port, {
-//    forwardPath: function(req, res) {
-//        return require('url').parse(req.url).path;
-//    }
-//}))
 
 app.listen(server_port, function (err) {
     if (err) return console.log(err);

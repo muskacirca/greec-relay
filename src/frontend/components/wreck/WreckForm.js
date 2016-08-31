@@ -55,6 +55,8 @@ class WreckForm extends React.Component {
 
         e.preventDefault();
 
+        console.log("this.refs.fileInput.files.item(0) : " + JSON.stringify(this.refs.fileInput.files.item(0)));
+
         var addOrUpdateWreckMutation = new AddOrUpdateWreckMutation({
             wreck: this.props.viewer.wreck,
             id: this.props.viewer.wreck.id,
@@ -64,8 +66,7 @@ class WreckForm extends React.Component {
             description: this.refs.description.value,
             sinkDate: this.refs.sinkDate.value,
             latitude: this.refs.latitude.value,
-            longitude: this.refs.longitude.value,
-            imagePath: "test"
+            longitude: this.refs.longitude.value
         });
 
         var onSuccess = (response) => {
@@ -93,7 +94,7 @@ class WreckForm extends React.Component {
 
     handleFile(e) {
 
-        var file = this.refs.imagePath.files.item(0);
+        var file = this.refs.fileInput.files.item(0);
         // var file = e.target.value.split(/(\\|\/)/g).pop()
         var file2 = e.target.files[0]
 

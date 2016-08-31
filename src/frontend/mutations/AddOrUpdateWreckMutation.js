@@ -34,7 +34,7 @@ class AddOrUpdateWreckMutation extends Relay.Mutation {
 
     getFiles() {
         return {
-            image: this.props.file,
+            file: this.props.file,
         };
     }
     
@@ -47,8 +47,7 @@ class AddOrUpdateWreckMutation extends Relay.Mutation {
             shortDescription: this.props.shortDescription,
             description: this.props.latitude,
             sinkDate: this.props.sinkDate,
-            imagePath: this.props.imagePath,
-            fileName: "test.yo"
+            imagePath: this.props.imagePath
         };
     }
 

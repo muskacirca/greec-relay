@@ -29,7 +29,7 @@ var AddOrUpdateWreckMutation = exports.AddOrUpdateWreckMutation = new _graphqlRe
         description: { type: new _graphql.GraphQLNonNull(_graphql.GraphQLString) },
         sinkDate: { type: new _graphql.GraphQLNonNull(_graphql.GraphQLString) },
         imagePath: { type: _graphql.GraphQLString },
-        fileName: { type: _graphql.GraphQLString }
+        file: { type: _graphql.GraphQLString }
     },
     outputFields: {
         wreck: {
@@ -44,33 +44,28 @@ var AddOrUpdateWreckMutation = exports.AddOrUpdateWreckMutation = new _graphqlRe
     },
     mutateAndGetPayload: function mutateAndGetPayload(wreck) {
 
-        console.log("yoooo : " + JSON.stringify(wreck.fileName));
+        console.log("yoooo : " + JSON.stringify(wreck));
 
-        if (wreck.fileName) {
-            var imageName = wreck.fileName.substring(0, wreck.fileName.lastIndexOf('.'));
-            var mimeType = wreck.fileName.substring(wreck.fileName.lastIndexOf('.'));
+        if (wreck.imagePath) {
+            var imageName = wreck.file.substring(0, wreck.file.lastIndexOf('.'));
+            var mimeType = wreck.file.substring(wreck.file.lastIndexOf('.'));
             console.log("imageName : " + JSON.stringify(imageName));
             console.log("mineType : " + JSON.stringify(mimeType));
         }
 
         if (!wreck.id) {
-            console.log("cearting : " + JSON.stringify(wreck));
+            console.log("creating : " + JSON.stringify(wreck));
             return _db2.default.models.wreck.create(wreck).then(function (r) {
                 return r;
             });
         } else {
             wreck.id = (0, _graphqlRelay.fromGlobalId)(wreck.id).id;
+            wreck.imagePath = wreck.file;
             console.log("updating : " + JSON.stringify(wreck));
             return _db2.default.models.wreck.update(wreck, { where: { id: wreck.id } }).then(function (r) {
                 console.log("r : " + JSON.stringify(r));
                 return r;
             });
         }
-
-        // return Database.models.wreck.update(wreck, {where: {id: wreck.id}}).then(r => {
-        //
-        //     return r
-        // })
-        // }
     }
 });

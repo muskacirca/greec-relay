@@ -13,25 +13,23 @@ import sanitize from 'sanitize-filename';
 
 const server_port = process.env.PORT || 3000;
 
-const graphql_ip = process.env.NODE_ENV === 'production' ? 'https://nodejsserverwithreact.herokuapp.com' : 'localhost'
-const graphql_port =   '5000'
-
 var app = express();
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, "../src/frontend/index.html"));
-})
+});
 
 app.use('/style', express.static(path.resolve(__dirname, '../src/style')));
 app.use('/utils', express.static(path.resolve(__dirname, '../src/utils')));
 app.use('/public', express.static(path.resolve(__dirname, '../src/public')));
+app.use('/images', express.static(path.resolve(__dirname, '../images')));
 
 app.get('/bundle.js', (req, res) => {
     res.sendFile(path.resolve(__dirname, "../lib/bundle.js"));
 });
 
 const storage = multer.memoryStorage();
-const multerMiddleware = multer({ storage: storage }).fields([{name: 'image'}]);
+const multerMiddleware = multer({ storage: storage }).fields([{name: 'file'}]);
 const uploadMiddleWare = (req, res, next) => {
     multerMiddleware(req, res, () => {
         // request contains file data in req.files in format
@@ -63,7 +61,7 @@ const uploadMiddleWare = (req, res, next) => {
         files.forEach(fileArray => {
             console.log("there's a file");
             const file = fileArray[0];
-            const filename = Date.now() + '_' + sanitize(file.originalname.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''));
+            const filename = sanitize(file.originalname.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''));
 
             // save file to disk
             const filePath = path.join(__dirname, '../images', filename);
@@ -82,22 +80,15 @@ app.use('/graphql', uploadMiddleWare);
 app.use('/graphql', graphQLHTTP(req => {
     return {
         schema: Schema,
-        rootValue: {request: req},
         pretty: true,
         graphiql: true
     }
 }));
 
-//app.use("/graphql", proxy(graphql_ip + ':' + graphql_port, {
-//    forwardPath: function(req, res) {
-//        return require('url').parse(req.url).path;
-//    }
-//}))
-
 app.listen(server_port, (err) => {
-    if(err) return console.log(err)
+    if(err) return console.log(err);
     console.log('Server is now running on port ' + server_port);
-})
+});
 
 
 

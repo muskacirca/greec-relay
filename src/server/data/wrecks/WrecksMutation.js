@@ -27,7 +27,7 @@ export const AddOrUpdateWreckMutation = new mutationWithClientMutationId({
         description: {type: new GraphQLNonNull(GraphQLString)},
         sinkDate: {type: new GraphQLNonNull(GraphQLString)},
         imagePath: {type: GraphQLString},
-        fileName: {type: GraphQLString}
+        file: {type: GraphQLString}
     },
     outputFields: {
         wreck: {
@@ -42,32 +42,26 @@ export const AddOrUpdateWreckMutation = new mutationWithClientMutationId({
     },
     mutateAndGetPayload: (wreck) => {
 
-        console.log("yoooo : " + JSON.stringify(wreck.fileName));
+        console.log("yoooo : " + JSON.stringify(wreck));
 
-        if(wreck.fileName) {
-            let imageName = wreck.fileName.substring(0, wreck.fileName.lastIndexOf('.'));
-            let mimeType = wreck.fileName.substring(wreck.fileName.lastIndexOf('.'));
+        if(wreck.imagePath) {
+            let imageName = wreck.file.substring(0, wreck.file.lastIndexOf('.'));
+            let mimeType = wreck.file.substring(wreck.file.lastIndexOf('.'));
             console.log("imageName : " + JSON.stringify(imageName));
             console.log("mineType : " + JSON.stringify(mimeType));
         }
 
         if(!wreck.id) {
-            console.log("cearting : " + JSON.stringify(wreck));
+            console.log("creating : " + JSON.stringify(wreck));
             return Database.models.wreck.create(wreck).then(r => r)
         } else {
             wreck.id = fromGlobalId(wreck.id).id;
+            wreck.imagePath = wreck.file;
             console.log("updating : " + JSON.stringify(wreck));
             return Database.models.wreck.update(wreck, {where: {id: wreck.id}}).then(r => {
                 console.log("r : " + JSON.stringify(r));
                 return r
             })
         }
-
-
-        // return Database.models.wreck.update(wreck, {where: {id: wreck.id}}).then(r => {
-        //
-        //     return r
-        // })
-        // }
     }
 });

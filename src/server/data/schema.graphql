@@ -12,7 +12,7 @@ input AddOrUpdateWreckInput {
   description: String!
   sinkDate: String!
   imagePath: String
-  fileName: String
+  file: String
   clientMutationId: String!
 }
 

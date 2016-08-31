@@ -683,7 +683,7 @@
               "defaultValue": null
             },
             {
-              "name": "fileName",
+              "name": "file",
               "description": null,
               "type": {
                 "kind": "SCALAR",

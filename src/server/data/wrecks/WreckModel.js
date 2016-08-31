@@ -34,10 +34,10 @@ var { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
         let { id, type } = fromGlobalId(globalId);
         if (type === 'WreckType') {
-            console.log("Im here")
+            console.log("Im here");
             return getById(id)
         } else if (type === "Viewer") {
-            console.log("Im here getting vieweer")
+            console.log("Im here getting vieweer");
             return getViewer(id);
         }
         return null;
@@ -107,20 +107,20 @@ export var GraphQLViewer = new GraphQLObjectType({
             type: WrecksConnection,
             args: {...connectionArgs},
             resolve: (obj, {...args}) => {
+                //
+                // console.log("retrieving data ...");
+                // console.log("is initialized : " + isInitialized());
 
-                console.log("retrieving data ...");
-                console.log("is initialized : " + isInitialized());
-
-                if (isInitialized()) {
-                    console.log("data retrieved from cache : " + getWrecks().length);
-                    return connectionFromArray(getWrecks(), args)
-                }
+                // if (isInitialized()) {
+                //     console.log("data retrieved from cache : " + getWrecks().length);
+                //     return connectionFromArray(getWrecks(), args)
+                // }
 
                 return Database.models.wreck.findAll()
                     .then((response) => {
                         console.log("data retrieved from remote : " + JSON.stringify(response.length));
                         initState(response);
-                        //return response
+                        return connectionFromArray(response, args)
                     });
             }
         },

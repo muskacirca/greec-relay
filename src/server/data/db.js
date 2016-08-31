@@ -1,12 +1,12 @@
 import Sequelize from 'sequelize'
 
-var mysql_schema = process.env.CLEARDB_DATABASE_SCHEMA || "greec"
-var mysql_user = process.env.CLEARDB_DATABASE_USER || "greec"
-var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "test"
+var mysql_schema = process.env.CLEARDB_DATABASE_SCHEMA || "greec";
+var mysql_user = process.env.CLEARDB_DATABASE_USER || "greec";
+var mysql_pass = process.env.CLEARDB_DATABASE_PASS || "greec";
 
 
 const connection = process.env.CLEARDB_DATABASE_URL !== undefined ? new Sequelize(process.env.CLEARDB_DATABASE_URL)
-    :  new Sequelize(mysql_schema, mysql_user, mysql_pass, {dialect: "mysql", host: "localhost"})
+    :  new Sequelize(mysql_schema, mysql_user, mysql_pass, {dialect: "mysql", host: "localhost"});
 
 const Wreck = connection.define('wreck',  {
 
