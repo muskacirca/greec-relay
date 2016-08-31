@@ -26,18 +26,30 @@ export const AddOrUpdateWreckMutation = new mutationWithClientMutationId({
         shortDescription: {type: new GraphQLNonNull(GraphQLString)},
         description: {type: new GraphQLNonNull(GraphQLString)},
         sinkDate: {type: new GraphQLNonNull(GraphQLString)},
-        imagePath: {type: GraphQLString}
+        imagePath: {type: GraphQLString},
+        fileName: {type: GraphQLString}
     },
     outputFields: {
         wreck: {
             type: GraphQLWreckType,
-            resolve: (wreck) => wreck
+            resolve: (rootvalue) => {
+                
+              //  const file = rootvalue.request.file;
+
+                return {}
+            }
         }
     },
     mutateAndGetPayload: (wreck) => {
 
-        console.log("yoooo : " + JSON.stringify(wreck));
+        console.log("yoooo : " + JSON.stringify(wreck.fileName));
 
+        if(wreck.fileName) {
+            let imageName = wreck.fileName.substring(0, wreck.fileName.lastIndexOf('.'));
+            let mimeType = wreck.fileName.substring(wreck.fileName.lastIndexOf('.'));
+            console.log("imageName : " + JSON.stringify(imageName));
+            console.log("mineType : " + JSON.stringify(mimeType));
+        }
 
         if(!wreck.id) {
             console.log("cearting : " + JSON.stringify(wreck));
@@ -50,5 +62,12 @@ export const AddOrUpdateWreckMutation = new mutationWithClientMutationId({
                 return r
             })
         }
+
+
+        // return Database.models.wreck.update(wreck, {where: {id: wreck.id}}).then(r => {
+        //
+        //     return r
+        // })
+        // }
     }
 });

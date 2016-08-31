@@ -50,7 +50,7 @@ class WreckForm extends React.Component {
     }
 
     submitForm(e) {
-        
+
         console.log("hello");
 
         e.preventDefault();
@@ -59,11 +59,13 @@ class WreckForm extends React.Component {
             wreck: this.props.viewer.wreck,
             id: this.props.viewer.wreck.id,
             name: this.refs.name.value,
+            file: this.refs.fileInput.files.item(0),
             shortDescription: this.refs.shortDescription.value,
             description: this.refs.description.value,
             sinkDate: this.refs.sinkDate.value,
             latitude: this.refs.latitude.value,
-            longitude: this.refs.longitude.value
+            longitude: this.refs.longitude.value,
+            imagePath: "test"
         });
 
         var onSuccess = (response) => {
@@ -72,8 +74,9 @@ class WreckForm extends React.Component {
         }
 
         var onFailure = (transaction) => {
-            console.log("transaction : " + transaction);
-            this.updateAlert("An error occurred when adding new wreck", "error");
+            let error = transaction.getError() || new Error('Mutation failed.');
+            console.log("wreckform mutation error ...: " );
+            this.updateAlert(error, "error");
         }
 
         Relay.Store.commitUpdate(addOrUpdateWreckMutation, {onSuccess, onFailure});
@@ -90,10 +93,11 @@ class WreckForm extends React.Component {
 
     handleFile(e) {
 
-        var file = e.target.files[0]
-        this.setState({file: file})
+        var file = this.refs.imagePath.files.item(0);
+        // var file = e.target.value.split(/(\\|\/)/g).pop()
+        var file2 = e.target.files[0]
 
-        var reader = new FileReader()
+        var reader = new FileReader();
 
         reader.onload = function(event) {
 
@@ -129,9 +133,12 @@ class WreckForm extends React.Component {
                 ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
 
                 document.getElementById('imagePreview').src = canvas.toDataURL(file.type);
+
             }
+
         }
 
+        this.setState({file: file});
         reader.readAsDataURL(file)
 
     }
@@ -242,7 +249,7 @@ class WreckForm extends React.Component {
                                 <div className="form-group">
                                     <label htmlFor="imageInputFile" className="col-md-2 control-label">Image</label>
                                     <div className="col-md-3">
-                                        <input ref="imagePath" type="file" name="uploadedFile" id="imageInputFile"
+                                        <input ref="fileInput" type="file" name="uploadedFile" id="imageInputFile"
                                                onChange={this.handleFile.bind(this)} />
                                         <p className="help-block">Taille maximum: 160Ko</p>
                                     </div>

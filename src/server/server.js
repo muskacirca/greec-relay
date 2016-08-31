@@ -1,12 +1,17 @@
 #!/bin/env node
-import proxy from 'express-http-proxy'
 import express from 'express'
 import path from 'path'
 
 import {Schema} from './data/schema';
 import graphQLHTTP from 'express-graphql';
 
-const server_port = process.env.PORT || 3000
+import multer from 'multer';
+import fs from 'fs'
+
+import _ from 'lodash';
+import sanitize from 'sanitize-filename';
+
+const server_port = process.env.PORT || 3000;
 
 const graphql_ip = process.env.NODE_ENV === 'production' ? 'https://nodejsserverwithreact.herokuapp.com' : 'localhost'
 const graphql_port =   '5000'
@@ -23,9 +28,65 @@ app.use('/public', express.static(path.resolve(__dirname, '../src/public')));
 
 app.get('/bundle.js', (req, res) => {
     res.sendFile(path.resolve(__dirname, "../lib/bundle.js"));
-})
+});
 
-app.use('/graphql', graphQLHTTP({ schema: Schema, pretty: true, graphiql: true}));
+const storage = multer.memoryStorage();
+const multerMiddleware = multer({ storage: storage }).fields([{name: 'image'}]);
+const uploadMiddleWare = (req, res, next) => {
+    multerMiddleware(req, res, () => {
+        // request contains file data in req.files in format
+        // {
+        //   key: [{
+        //     fieldname,
+        //     originalname,
+        //     encoding,
+        //     mimetype,
+        //     buffer,
+        //     size
+        //   }]
+        // }
+
+        // convert to array in format
+        // [
+        //   [fieldname, originalname ...]
+        // ]
+        const files = _.values(req.files);
+
+        if (!files || files.length === 0) {
+            next();
+            return;
+        }
+
+        // Parse variables so we can add to them. (express-graphql won't parse them again once populated)
+        req.body.variables = JSON.parse(req.body.variables);
+
+        files.forEach(fileArray => {
+            console.log("there's a file");
+            const file = fileArray[0];
+            const filename = Date.now() + '_' + sanitize(file.originalname.replace(/[`~!@#$%^&*()_|+\-=÷¿?;:'",<>\{\}\[\]\\\/]/gi, ''));
+
+            // save file to disk
+            const filePath = path.join(__dirname, '../images', filename);
+            fs.writeFileSync(filePath, file.buffer);
+
+            // add files to graphql input. we only support single images here
+            req.body.variables.input_0[file.fieldname] = '/images/'+filename;
+        });
+
+        next();
+    });
+};
+
+app.use('/graphql', uploadMiddleWare);
+
+app.use('/graphql', graphQLHTTP(req => {
+    return {
+        schema: Schema,
+        rootValue: {request: req},
+        pretty: true,
+        graphiql: true
+    }
+}));
 
 //app.use("/graphql", proxy(graphql_ip + ':' + graphql_port, {
 //    forwardPath: function(req, res) {

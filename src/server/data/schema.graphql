@@ -1,3 +1,8 @@
+schema {
+  query: Root
+  mutation: Mutation
+}
+
 input AddOrUpdateWreckInput {
   id: String
   name: String!
@@ -7,6 +12,7 @@ input AddOrUpdateWreckInput {
   description: String!
   sinkDate: String!
   imagePath: String
+  fileName: String
   clientMutationId: String!
 }
 
@@ -15,33 +21,51 @@ type AddOrUpdateWreckPayload {
   clientMutationId: String!
 }
 
+# Mother of all mutations
 type Mutation {
   addOrUpdateWreck(input: AddOrUpdateWreckInput!): AddOrUpdateWreckPayload
 }
 
+# An object with an ID
 interface Node {
+  # The id of the object.
   id: ID!
 }
 
+# Information about pagination in a connection.
 type PageInfo {
+  # When paginating forwards, are there more items?
   hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
   hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
   startCursor: String
+
+  # When paginating forwards, the cursor to continue.
   endCursor: String
 }
 
 type Root {
   viewer: Viewer
-  node(id: ID!): Node
+
+  # Fetches an object given its ID
+  node(
+    # The ID of an object
+    id: ID!
+  ): Node
 }
 
 type Viewer implements Node {
+  # The ID of an object
   id: ID!
   wrecks(after: String, first: Int, before: String, last: Int): WreckTypeConnection
   wreck(id: String): WreckType
 }
 
 type WreckType implements Node {
+  # The ID of an object
   id: ID!
   wreckId: String
   name: String
@@ -53,12 +77,20 @@ type WreckType implements Node {
   imagePath: String
 }
 
+# A connection to a list of items.
 type WreckTypeConnection {
+  # Information to aid in pagination.
   pageInfo: PageInfo!
+
+  # A list of edges.
   edges: [WreckTypeEdge]
 }
 
+# An edge in a connection.
 type WreckTypeEdge {
+  # The item at the end of the edge
   node: WreckType
+
+  # A cursor for use in pagination
   cursor: String!
 }

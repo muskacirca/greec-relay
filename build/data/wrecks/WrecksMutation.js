@@ -28,19 +28,30 @@ var AddOrUpdateWreckMutation = exports.AddOrUpdateWreckMutation = new _graphqlRe
         shortDescription: { type: new _graphql.GraphQLNonNull(_graphql.GraphQLString) },
         description: { type: new _graphql.GraphQLNonNull(_graphql.GraphQLString) },
         sinkDate: { type: new _graphql.GraphQLNonNull(_graphql.GraphQLString) },
-        imagePath: { type: _graphql.GraphQLString }
+        imagePath: { type: _graphql.GraphQLString },
+        fileName: { type: _graphql.GraphQLString }
     },
     outputFields: {
         wreck: {
             type: _WreckModel.GraphQLWreckType,
-            resolve: function resolve(wreck) {
-                return wreck;
+            resolve: function resolve(rootvalue) {
+
+                //  const file = rootvalue.request.file;
+
+                return {};
             }
         }
     },
     mutateAndGetPayload: function mutateAndGetPayload(wreck) {
 
-        console.log("yoooo : " + JSON.stringify(wreck));
+        console.log("yoooo : " + JSON.stringify(wreck.fileName));
+
+        if (wreck.fileName) {
+            var imageName = wreck.fileName.substring(0, wreck.fileName.lastIndexOf('.'));
+            var mimeType = wreck.fileName.substring(wreck.fileName.lastIndexOf('.'));
+            console.log("imageName : " + JSON.stringify(imageName));
+            console.log("mineType : " + JSON.stringify(mimeType));
+        }
 
         if (!wreck.id) {
             console.log("cearting : " + JSON.stringify(wreck));
@@ -55,5 +66,11 @@ var AddOrUpdateWreckMutation = exports.AddOrUpdateWreckMutation = new _graphqlRe
                 return r;
             });
         }
+
+        // return Database.models.wreck.update(wreck, {where: {id: wreck.id}}).then(r => {
+        //
+        //     return r
+        // })
+        // }
     }
 });
