@@ -26,7 +26,7 @@ class AddOrUpdateWreckMutation extends Relay.Mutation {
             {
                 type: 'FIELDS_CHANGE',
                 fieldIDs: {
-                    wreck: this.props.wreck.id
+                    wreck: this.props.wreck ? this.props.wreck.id : null
                 }
             },
         ]

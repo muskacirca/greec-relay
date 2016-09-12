@@ -30,7 +30,7 @@ export default <Route path="/" component={MainApp} queries={WreckQueries} >
 
                     <Route path="admin" component={Admin} queries={WreckQueries} />
 
-                    <Route path="admin/wreck/create" component={WreckForm} />
+                    <Route path="admin/wreck/create" component={WreckForm} queries={WreckQueries} />
                     <Route path="admin/wreck/edit/:id" component={WreckForm} queries={WreckUnitQuery}
                            prepareParams={prepareWidgetListParams} />/>
                 </Route>

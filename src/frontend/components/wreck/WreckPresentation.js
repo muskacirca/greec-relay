@@ -2,10 +2,17 @@ import React from 'react'
 import Relay from 'react-relay'
 import ReactMarkdown from 'react-markdown'
 
+import Lightbox from 'react-images'
+
 class PresentationComponent extends React.Component {
 
     constructor(props) {
-        super(props)
+        
+        super(props);
+
+        this.state = {
+            lightboxIsOpen: false
+        };
     }
 
     getThumbnail(src) {
@@ -18,18 +25,47 @@ class PresentationComponent extends React.Component {
         return name + suffix +  extension
     }
 
+    gotoPrevLightboxImage() {
+
+    }
+
+
+    gotoNextLightboxImage() {
+
+    }
+
+    toggleLightBox() {
+        this.setState({lightboxIsOpen: !this.state.lightboxIsOpen})
+    }
+
+    renderPhotoGallery(images) {
+
+        let imageList = [{src: images}];
+
+        return  <Lightbox images={imageList}
+                        isOpen={this.state.lightboxIsOpen}
+                        onClickPrev={this.gotoPrevLightboxImage.bind(this)}
+                        onClickNext={this.gotoNextLightboxImage.bind(this)}
+                        onClose={this.toggleLightBox.bind(this)} />
+    }
+    
+
     render() {
 
         console.log("wreck in PresentationComponent ")
         var wreck = this.props.wreck
 
-        var thumbnailPath = this.getThumbnail(wreck.imagePath)
+        var thumbnailPath = this.getThumbnail(wreck.imagePath);
+
+        let gallery = this.renderPhotoGallery(wreck.imagePath)
 
         return  <div  data-framework="relay">
+                    {gallery}
                   <div className="media">
-                      <div className="media-left">
+                      <div className="pointer media-left" onClick={this.toggleLightBox.bind(this)}>
                           <img className="media-object img-thumbnail" src={thumbnailPath} alt={wreck.name} />
                       </div>
+
                       <div className="media-body">
 
                           <h1 className="media-heading">{wreck.name}</h1>

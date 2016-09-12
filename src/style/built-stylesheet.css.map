@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAKA,2BAA4B;EAC1B,WAAW,EAAE,IAA+C;;AAG9D,aAAc;EACZ,WAAW,EAAE,IAAI;EACjB,YAAY,EAAE,IAAI;EAClB,WAAW,EAAE,IAAI",
+"sources": ["style.scss"],
+"names": [],
+"file": "built-stylesheet.css"
+}

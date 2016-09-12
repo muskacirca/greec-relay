@@ -13,7 +13,8 @@ class MainMap extends React.Component {
             longitude: "",
             initialZoom: 4,
             mapCenterLat: 30.04442,
-            mapCenterLng: 31.235712
+            mapCenterLng: 31.235712,
+            editionMode: true
         }
     }
 
@@ -63,7 +64,7 @@ class MainMap extends React.Component {
                     { visibility: "off" }
                 ]
             }
-        ]
+        ];
 
         var mapContainer = document.getElementById('map');
         var map = new google.maps.Map(mapContainer, {
@@ -71,7 +72,7 @@ class MainMap extends React.Component {
             streetViewControl: false,
             disableDefaultUI: true,
             zoom: this.state.initialZoom
-        })
+        });
 
         google.maps.event.addListener(map, 'click', function(e) {
             if(this.state.editionMode) {
@@ -79,7 +80,7 @@ class MainMap extends React.Component {
             }
         }.bind(this));
 
-        map.setOptions({styles: styleArray })
+        map.setOptions({styles: styleArray });
 
         this.setState({map: map});
     }
@@ -90,17 +91,33 @@ class MainMap extends React.Component {
             this.state.selectCoordinatesMarker.setMap(null)
         }
 
-        var marker = new google.maps.Marker({
+        let marker = new google.maps.Marker({
             position: location,
             map: this.state.map,
             icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
-        })
+        });
 
-        console.log("calling setState in main map begin")
+        marker.addListener('click', () => this.handleNewMarkerClick(marker));
+
         this.setState({selectCoordinatesMarker: marker}, () => { console.log("calling setState in main map end") })
 
         var coordinates = {lat: marker.getPosition().lat(), lng: marker.getPosition().lng()}
         // MapAction.selectCoordinates(coordinates)
+    }
+
+    saveData() {
+        console.log("save data");
+    }
+
+    handleNewMarkerClick(marker) {
+
+        var contentString = "<input type='text' class='form-control' placeholder='hello' onchange='saveData()' />";
+
+        let infowindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+
+        infowindow.open(map, marker);
     }
 
     drawMarkers(map) {
@@ -116,7 +133,7 @@ class MainMap extends React.Component {
                     position: myLatLng,
                     map: map,
                     title: elt.name
-                })
+                });
 
                 marker.addListener('click', function() {
                     map.setZoom(7);

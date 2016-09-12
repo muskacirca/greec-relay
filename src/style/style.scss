@@ -1,0 +1,14 @@
+$sub-bar-height: 90px;
+$button-height: 34px;
+
+$navbar-height: 66px;
+
+.sub-bar-component-centered {
+  padding-top: ($sub-bar-height / 2) - ($button-height /2) - 5;
+}
+
+.page-content {
+  padding-top: 10px;
+  margin-right: 10px;
+  margin-left: 10px;
+}

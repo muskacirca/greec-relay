@@ -8,6 +8,7 @@ import sanitize from 'sanitize-filename';
 
 import _ from 'lodash'
 
+import FormHeader from '../utils/FormHeader'
 import ReactMarkdown from 'react-markdown'
 
 
@@ -16,7 +17,7 @@ class WreckForm extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            wreck: {description: ''},
+            wreck: {},
             file: {},
             fileUri: "",
             editionMode: false,
@@ -29,11 +30,15 @@ class WreckForm extends React.Component {
     }
 
     componentWillReceiveProps(nextprops) {
-        this.setState({wreck: nextprops.viewer.wreck})
+        if(extprops.viewer.wreck) {
+            this.setState({wreck: nextprops.viewer.wreck})
+        }
     }
 
     componentDidMount() {
-        this.setState({wreck: this.props.viewer.wreck})
+        if(this.props.viewer.wreck) {
+            this.setState({wreck: this.props.viewer.wreck})
+        }
     }
 
     displayDate() {
@@ -48,10 +53,6 @@ class WreckForm extends React.Component {
         this.setState({alert: alert})
     }
 
-    computeAlerts() {
-            return <Alert alert={this.state.alert}/>
-    }
-
     submitForm(e) {
 
         e.preventDefault();
@@ -63,7 +64,7 @@ class WreckForm extends React.Component {
 
         const addOrUpdateWreckMutation = new AddOrUpdateWreckMutation({
             wreck: this.props.viewer.wreck,
-            id: this.props.viewer.wreck.id,
+            id: this.props.viewer.wreck ? this.props.viewer.wreck.id : null,
             name: this.refs.name.value,
             file: file,
             shortDescription: this.refs.shortDescription.value,
@@ -79,8 +80,9 @@ class WreckForm extends React.Component {
         };
 
         let onFailure = (transaction) => {
-            let error = transaction.getError() || new Error('Mutation failed.');
-            this.updateAlert(error, "error");
+            let error = transaction.getError() || 'Mutation failed.';
+            console.log("error : " + JSON.stringify(error));
+            this.updateAlert("An error occurred", "error");
         };
 
         Relay.Store.commitUpdate(addOrUpdateWreckMutation, {onSuccess, onFailure});
@@ -146,7 +148,7 @@ class WreckForm extends React.Component {
     }
 
     validateCoordinates(e) {
-        var coordinate = e.target.value
+        let coordinate = e.target.value
     }
 
     selectCoordinate(e) {
@@ -155,42 +157,53 @@ class WreckForm extends React.Component {
     }
 
     onFieldChange(field, e) {
-        var newWreck = _.set(this.state.wreck, field, e.target.value)
+        let newWreck = _.set(this.state.wreck, field, e.target.value);
         this.setState({wreck: newWreck})
     }
 
     computePageTitle() {
-        return this.state.editionMode ? "Mise à jour de l'épave" : "Ajout d'une nouvelle épave"
+        return this.props.viewer.wreck ? "Update the wreck" : "Add a new wreck"
+    }
+
+    computeMarkdownContent(wreckDescription) {
+
+        return wreckDescription
+                    ? wreckDescription
+                    : "## Live edition\n" +
+                      "Edit the description field with mardown syntax. Documentation available [here](https://fr.wikipedia.org/wiki/Markdown)"
     }
 
     render() {
 
-        let wreck = this.state.wreck;
+        let wreck = this.state.wreck //? this.state.wreck : {};
 
-        let latitude = this.state.wreck.latitude;
-        let longitude = this.state.wreck.longitude;
+        let latitude = wreck.latitude;
+        let longitude = wreck.longitude;
         if(this.props.selectedCoordinates) {
-            console.log("not edition mode")
             latitude = this.props.selectedCoordinates.lat;
             longitude = this.props.selectedCoordinates.lng
         }
 
+        this.drawThumbnail(wreck.imagePath);
+
         let pageTitle = this.computePageTitle();
-        let alerts = this.computeAlerts();
-        this.drawThumbnail(this.state.wreck.imagePath);
+        let markdownContent = this.computeMarkdownContent(wreck.description);
 
         return  <div className="col-md-10 col-md-offset-1">
-                    {alerts}
-                    <h2>{pageTitle}</h2>
-                    <br />
-                    <div className="row">
+
+
+                    <FormHeader title={pageTitle}
+                            alert={this.state.alert}
+                            onSave={this.submitForm.bind(this)} />
+
+                    <div className="page-content row">
                         <div className="col-md-6">
-                            <form encType="multipart/form-data" method="post" className="form-horizontal" onSubmit={this.submitForm.bind(this)}>
+                            <form encType="multipart/form-data" method="post" className="form-horizontal">
                                 <div className="form-group">
                                     <label htmlFor="nameWreckInput" className="col-md-2 control-label">Nom</label>
                                     <div className="col-md-10">
                                         <input id="nameWreckInput" ref="name" className="form-control"  placeholder="Nom"
-                                               type="text" value={this.state.wreck.name} onChange={this.onFieldChange.bind(this, 'name')}/>
+                                               type="text" value={wreck.name} onChange={this.onFieldChange.bind(this, 'name')}/>
                                     </div>
                                 </div>
                                 <div className="form-group" >
@@ -198,7 +211,7 @@ class WreckForm extends React.Component {
                                     <div className="col-md-10">
                                         <div className="input-group">
                                             <input id="sinkDateWreckInput" ref="sinkDate"type="text" className="form-control"
-                                                   placeholder="22-07-1975" value={this.state.wreck.sinkDate}
+                                                   placeholder="22-07-1975" value={wreck.sinkDate}
                                                    onChange={this.onFieldChange.bind(this, "sinkDate")} />
                                                         <span className="input-group-btn">
                                                             <button className="btn btn-default" type="button">
@@ -212,7 +225,7 @@ class WreckForm extends React.Component {
                                     <label htmlFor="shortDescriptionWreckTextArea" className="col-md-2 control-label">Description courte</label>
                                     <div className="col-md-10">
                                         <input id="shortDescriptionWreckTextArea" ref="shortDescription" placeholder="Description courte"
-                                               type="textarea"  className="form-control" value={this.state.wreck.shortDescription}
+                                               type="textarea"  className="form-control" value={wreck.shortDescription}
                                                onChange={this.onFieldChange.bind(this, "shortDescription")}/>
                                     </div>
                                 </div>
@@ -220,7 +233,7 @@ class WreckForm extends React.Component {
                                     <label htmlFor="descriptionWreckTextArea" className="col-md-2 control-label">Description</label>
                                     <div className="col-md-10">
                                             <textarea id="descriptionWreckTextArea" ref="description" placeholder="Description"
-                                                      className="form-control" value={this.state.wreck.description}
+                                                      className="form-control" value={wreck.description}
                                                         onChange={this.onFieldChange.bind(this, 'description')} />
                                     </div>
                                 </div>
@@ -262,17 +275,10 @@ class WreckForm extends React.Component {
                                         <img id="imagePreview" />
                                     </div>
                                 </div>
-                                <div className="form-group">
-                                    <div className="col-md-offset-2 col-md-10">
-                                        <button type="submit" onClick={this.submitForm.bind(this)} className="btn btn-primary">
-                                            Submit
-                                        </button>
-                                    </div>
-                                </div>
                             </form>
                         </div>
                         <div className="col-md-6">
-                            <ReactMarkdown source={this.state.wreck.description} />
+                            <ReactMarkdown source={markdownContent} />
                         </div>
 
                     </div>
